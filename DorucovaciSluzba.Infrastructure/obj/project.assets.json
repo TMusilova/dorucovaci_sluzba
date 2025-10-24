@@ -1,11 +1,30 @@
 {
   "version": 3,
   "targets": {
-    "net9.0": {}
+    "net9.0": {
+      "DorucovaciSluzba.Domain/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v9.0",
+        "compile": {
+          "bin/placeholder/DorucovaciSluzba.Domain.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/DorucovaciSluzba.Domain.dll": {}
+        }
+      }
+    }
   },
-  "libraries": {},
+  "libraries": {
+    "DorucovaciSluzba.Domain/1.0.0": {
+      "type": "project",
+      "path": "../DorucovaciSluzba.Domain/DorucovaciSluzba.Domain.csproj",
+      "msbuildProject": "../DorucovaciSluzba.Domain/DorucovaciSluzba.Domain.csproj"
+    }
+  },
   "projectFileDependencyGroups": {
-    "net9.0": []
+    "net9.0": [
+      "DorucovaciSluzba.Domain >= 1.0.0"
+    ]
   },
   "packageFolders": {
     "C:\\Users\\Tereza\\.nuget\\packages\\": {},
@@ -38,7 +57,11 @@
       "frameworks": {
         "net9.0": {
           "targetAlias": "net9.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "C:\\Users\\Tereza\\Documents\\DorucovaciSluzba\\DorucovaciSluzba.Domain\\DorucovaciSluzba.Domain.csproj": {
+              "projectPath": "C:\\Users\\Tereza\\Documents\\DorucovaciSluzba\\DorucovaciSluzba.Domain\\DorucovaciSluzba.Domain.csproj"
+            }
+          }
         }
       },
       "warningProperties": {

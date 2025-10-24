@@ -31,7 +31,14 @@
         "frameworks": {
           "net9.0": {
             "targetAlias": "net9.0",
-            "projectReferences": {}
+            "projectReferences": {
+              "C:\\Users\\Tereza\\Documents\\DorucovaciSluzba\\DorucovaciSluzba.Domain\\DorucovaciSluzba.Domain.csproj": {
+                "projectPath": "C:\\Users\\Tereza\\Documents\\DorucovaciSluzba\\DorucovaciSluzba.Domain\\DorucovaciSluzba.Domain.csproj"
+              },
+              "C:\\Users\\Tereza\\Documents\\DorucovaciSluzba\\DorucovaciSluzba.Infrastructure\\DorucovaciSluzba.Infrastructure.csproj": {
+                "projectPath": "C:\\Users\\Tereza\\Documents\\DorucovaciSluzba\\DorucovaciSluzba.Infrastructure\\DorucovaciSluzba.Infrastructure.csproj"
+              }
+            }
           }
         },
         "warningProperties": {
@@ -239,7 +246,11 @@
         "frameworks": {
           "net9.0": {
             "targetAlias": "net9.0",
-            "projectReferences": {}
+            "projectReferences": {
+              "C:\\Users\\Tereza\\Documents\\DorucovaciSluzba\\DorucovaciSluzba.Domain\\DorucovaciSluzba.Domain.csproj": {
+                "projectPath": "C:\\Users\\Tereza\\Documents\\DorucovaciSluzba\\DorucovaciSluzba.Domain\\DorucovaciSluzba.Domain.csproj"
+              }
+            }
           }
         },
         "warningProperties": {

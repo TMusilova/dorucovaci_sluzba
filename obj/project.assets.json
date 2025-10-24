@@ -5,6 +5,10 @@
       "DorucovaciSluzba.Application/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v9.0",
+        "dependencies": {
+          "DorucovaciSluzba.Domain": "1.0.0",
+          "DorucovaciSluzba.Infrastructure": "1.0.0"
+        },
         "compile": {
           "bin/placeholder/DorucovaciSluzba.Application.dll": {}
         },
@@ -25,6 +29,9 @@
       "DorucovaciSluzba.Infrastructure/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v9.0",
+        "dependencies": {
+          "DorucovaciSluzba.Domain": "1.0.0"
+        },
         "compile": {
           "bin/placeholder/DorucovaciSluzba.Infrastructure.dll": {}
         },
