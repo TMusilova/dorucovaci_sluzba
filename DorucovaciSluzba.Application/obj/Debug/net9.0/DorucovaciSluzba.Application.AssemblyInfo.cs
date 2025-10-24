@@ -11,12 +11,12 @@
 using System;
 using System.Reflection;
 
-[assembly: System.Reflection.AssemblyCompanyAttribute("DorucovaciSluzba")]
+[assembly: System.Reflection.AssemblyCompanyAttribute("DorucovaciSluzba.Application")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
 [assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a1e22b6a7104fa14ec1b43b0776cac0c9d7cc9e5")]
-[assembly: System.Reflection.AssemblyProductAttribute("DorucovaciSluzba")]
-[assembly: System.Reflection.AssemblyTitleAttribute("DorucovaciSluzba")]
+[assembly: System.Reflection.AssemblyProductAttribute("DorucovaciSluzba.Application")]
+[assembly: System.Reflection.AssemblyTitleAttribute("DorucovaciSluzba.Application")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
 
 // Vygenerované třídou WriteCodeFragment nástroje MSBuild
