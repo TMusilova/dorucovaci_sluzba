@@ -24,6 +24,9 @@ namespace DorucovaciSluzba.Domain.Entities
         public string DestinaceUlice { get; set; } = string.Empty;
 
         [Required]
+        public string DestinaceCP { get; set; } = string.Empty;
+
+        [Required]
         public string DestinaceMesto { get; set; } = string.Empty;
 
         [Required]

@@ -45,8 +45,14 @@ namespace DorucovaciSluzba.Infrastructure.Database
             var userTypeInit = new UserTypeInit();
             modelBuilder.Entity<TypUzivatel>().HasData(userTypeInit.GetUserTypes());
 
+            var stateInit = new StateInit();
+            modelBuilder.Entity<StavZasilka>().HasData(stateInit.GetStates());
+
             var userInit = new UserInit();
             modelBuilder.Entity<Uzivatel>().HasData(userInit.GetUsers());
+
+            var packageInit = new PackageInit();
+            modelBuilder.Entity<Zasilka>().HasData(packageInit.GetPackages());
         }
     }
 }

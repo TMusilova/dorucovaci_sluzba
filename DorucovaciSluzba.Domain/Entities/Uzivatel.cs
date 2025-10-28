@@ -25,6 +25,7 @@ namespace DorucovaciSluzba.Domain.Entities
         public DateTime? DatumNarozeni { get; set; }
         public string? Telefon { get; set; }
         public string? Ulice { get; set; }
+        public string? CP { get; set; }
         public string? Mesto { get; set; }
         public string? Psc { get; set; }
 
