@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <Folder Include="DorucovaciSluzba.Application\" />
+    <Folder Include="Models\Package\" />
   </ItemGroup>
 
 </Project>

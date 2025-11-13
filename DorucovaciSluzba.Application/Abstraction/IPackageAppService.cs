@@ -5,5 +5,6 @@ namespace DorucovaciSluzba.Application.Abstraction
     public interface IPackageAppService
     {
         IList<Zasilka> Select();
+        void Create(Zasilka zasilka);
     }
 }

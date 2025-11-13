@@ -1,0 +1,39 @@
+﻿@model Zasilka
+
+
+@{
+    ViewData["Title"] = "Vytvoření zásilky";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+
+<form asp-action="Create" method="post">
+    <div class="mb-3">
+        <h3>Odesílatel</h3>
+        <label class="form-label" asp-for="OdesilatelId">Odesílatel</label>
+        <input class="form-control" asp-for="OdesilatelId">
+    </div>
+    <div class="mb-3">
+        <label class="form-label" asp-for="PrijemceId">Příjemce:</label>
+        <input class="form-control" asp-for="PrijemceId">
+    </div>
+    <div class="mb-3">
+        <label class="form-label" asp-for="DestinaceUlice">Ulice</label>
+        <input class="form-control" asp-for="DestinaceUlice">
+    </div>
+    <div class="mb-3">
+        <label class="form-label" asp-for="DestinaceCP">Č.p.</label>
+        <input class="form-control" asp-for="DestinaceCP">
+    </div>
+    <div class="mb-3">
+        <label class="form-label" asp-for="DestinaceMesto">Město</label>
+        <input class="form-control" asp-for="DestinaceMesto">
+    </div>
+    <div class="mb-3">
+        <label class="form-label" asp-for="DestinacePsc">PSČ</label>
+        <input class="form-control" asp-for="DestinacePsc">
+    </div>
+
+    <button type="submit" class="btn btn-primary">Odeslat</button>
+</form>

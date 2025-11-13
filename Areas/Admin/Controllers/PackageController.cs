@@ -20,5 +20,19 @@ namespace DorucovaciSluzba.Areas.Admin.Controllers
             IList<Zasilka> packages = _packageAppService.Select();
             return View(packages);
         }
+
+        [HttpGet]
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult Create(Zasilka zasilka)
+        {
+            _packageAppService.Create(zasilka);
+
+            return RedirectToAction(nameof(PackageController.Select));
+        }
     }
 }

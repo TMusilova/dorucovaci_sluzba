@@ -13,6 +13,7 @@ ServerVersion serverVersion = new MySqlServerVersion("8.0.43");
 builder.Services.AddDbContext<AppDbContext>(optionsBuilder => optionsBuilder.UseMySql(connectionString, serverVersion));
 
 builder.Services.AddScoped<IPackageAppService, PackageAppService>();
+builder.Services.AddScoped<IUserAppService, UserAppService>();
 
 var app = builder.Build();
 

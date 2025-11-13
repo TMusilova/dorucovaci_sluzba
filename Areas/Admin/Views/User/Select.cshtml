@@ -1,0 +1,59 @@
+﻿@model IList<Uzivatel>
+
+
+@{
+    ViewData["Title"] = "Správa uživatelů";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<a asp-action="Create">Vytvořit uživatele</a>
+
+@{
+    if (Model != null && Model.Count > 0)
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Jméno</th>
+                    <th scope="col">Příjmení</th>
+                    <th scope="col">E-mail</th>
+                    <th scope="col">Heslo</th>
+                    <th scope="col">Datum narození</th>
+                    <th scope="col">Telefon</th>
+                    <th scope="col">Adresa</th>
+                    <th scope="col">Typ uživatele</th>
+
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach (var uzivatel in Model)
+                {
+                    <tr>
+                        <th>@uzivatel.Id</th>
+                        <td>@uzivatel.Jmeno</td>
+                        <td>@uzivatel.Prijmeni</td>
+                        <td>@uzivatel.Email</td>
+                        <td>@uzivatel.Heslo</td>
+                        <td>@uzivatel.DatumNarozeni?.ToString("dd.MM.yyyy")</td>
+                        <td>@uzivatel.Telefon</td>
+                        <td>
+                            @if (uzivatel.Ulice != null)
+                            {
+                                @($"{uzivatel.Ulice} {uzivatel.CP}, {uzivatel.Mesto}, {uzivatel.Psc}")
+                            }
+                        </td>
+                        <td>@uzivatel.Typ?.Typ</td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>User table is empty!</p>
+    }
+}

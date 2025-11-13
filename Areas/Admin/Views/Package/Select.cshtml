@@ -1,50 +1,65 @@
 ﻿@model IList<Zasilka>
 
-
 @{
     ViewData["Title"] = "Správa zásilek";
 }
 
 <h1>@ViewData["Title"]</h1>
 
+<a asp-action="Create">Vytvořit balík</a>
 
-@{
-    if (Model != null && Model.Count > 0)
-    {
-        <table class="table">
-            <thead>
+@if (Model != null && Model.Count > 0)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Číslo zásilky</th>
+                <th>Datum odeslání</th>
+                <th>Odesílatel</th>
+                <th>Příjemce</th>
+                <th>Adresa doručení</th>
+                <th>Kurýr</th>
+                <th>Stav</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var zasilka in Model)
+            {
                 <tr>
-                    <th scope="col">@nameof(Zasilka.Id)</th>
-                    <th scope="col">@nameof(Zasilka.Cislo)</th>
-                    <th scope="col">@nameof(Zasilka.DatumOdeslani)</th>
-                    <th scope="col">@nameof(Zasilka.OdesilatelId)</th>
-                    <th scope="col">@nameof(Zasilka.PrijemceId)</th>
-                    <th scope="col">@nameof(Zasilka.KuryrId)</th>
-                    <th scope="col">@nameof(Zasilka.StavId)</th>
-
+                    <td>@zasilka.Id</td>
+                    <td>@zasilka.Cislo</td>
+                    <td>@zasilka.DatumOdeslani.ToString("dd.MM.yyyy")</td>
+                    <td>
+                        @if (zasilka.Odesilatel != null)
+                        {
+                            @($"{zasilka.Odesilatel.Jmeno} {zasilka.Odesilatel.Prijmeni} ({zasilka.Odesilatel.Email})")
+                        }
+                    </td>
+                    <td>
+                        @if (zasilka.Prijemce != null)
+                        {
+                            @($"{zasilka.Prijemce.Jmeno} {zasilka.Prijemce.Prijmeni} ({zasilka.Prijemce.Email})")
+                        }
+                    </td>
+                    <td>
+                        @if (zasilka.Prijemce != null)
+                        {
+                            @($"{zasilka.Prijemce.Ulice} {zasilka.Prijemce.CP}, {zasilka.Prijemce.Mesto}, {zasilka.Prijemce.Psc}")
+                        }
+                    </td>
+                    <td>
+                        @zasilka.Kuryr?.Id
+                    </td>
+                    <td>
+                        @zasilka.Stav?.Stav
+                    </td>
                 </tr>
-            </thead>
-            <tbody>
-
-                @for (int i = 0; i < Model.Count; ++i)
-                {
-                    Zasilka zasilka = Model[i];
-                    <tr>
-                        <th scope="row">@zasilka.Id</th>
-                        <td>@zasilka.Cislo</td>
-                        <td>@zasilka.DatumOdeslani</td>
-                        <td>@zasilka.OdesilatelId</td>
-                        <td>@zasilka.PrijemceId</td>
-                        <td>@zasilka.KuryrId</td>
-                        <td>@zasilka.StavId</td>
-                    </tr>
-                }
-
-            </tbody>
-        </table>
-    }
-    else
-    {
-        <p>Package table is empty!</p>
-    }
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>Žádné zásilky nebyly nalezeny.</p>
 }
