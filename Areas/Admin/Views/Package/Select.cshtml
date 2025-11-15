@@ -55,7 +55,7 @@
                         @zasilka.Stav?.Stav
                     </td>
                     <td>
-                        <a asp-action="Delete" class="btn btn-outline-danger" asp-route-id="@zasilka.Id">Smazat</a>
+                        <a asp-action="Delete" class="btn btn-outline-danger" asp-route-id="@zasilka.Id" onclick="return ConfirmDelete();">Smazat</a>
                     </td>
                 </tr>
             }
@@ -70,3 +70,9 @@ else
 <div class="d-grid gap-2 d-md-flex justify-content-md-end mb-4">
     <a asp-action="Create" class="btn btn-primary btn-lg">Vytvořit balík</a>
 </div>
+
+
+@section Scripts
+{
+    <script src="~/js/dialogs.js"></script>
+}

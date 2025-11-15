@@ -84,6 +84,7 @@ namespace DorucovaciSluzba.Areas.Admin.Controllers
             }
         }
 
+        [HttpPost]
         public IActionResult Delete(int id)
         {
             bool deleted = _packageAppService.Delete(id);

@@ -95,9 +95,17 @@ namespace DorucovaciSluzba.Application.Implementation
             {
                 return false; // uživatel neexistuje
             }
-            _appDbContext.Uzivatele.Remove(uzivatel);
-            _appDbContext.SaveChanges();
-            return true;
+
+            try
+            {
+                _appDbContext.Uzivatele.Remove(uzivatel);
+                _appDbContext.SaveChanges();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }

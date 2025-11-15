@@ -47,7 +47,7 @@
                         </td>
                         <td>@uzivatel.Typ?.Typ</td>
                         <td>
-                            <a asp-action="Delete" class="btn btn-outline-danger" asp-route-id="@uzivatel.Id">Smazat</a>
+                            <a asp-action="Delete" class="btn btn-outline-danger" asp-route-id="@uzivatel.Id" onclick="return ConfirmDelete();">Smazat</a>
                         </td>
                     </tr>
                 }
@@ -59,4 +59,9 @@
     {
         <p>User table is empty!</p>
     }
+}
+
+@section Scripts
+{
+    <script src="~/js/dialogs.js"></script>
 }
