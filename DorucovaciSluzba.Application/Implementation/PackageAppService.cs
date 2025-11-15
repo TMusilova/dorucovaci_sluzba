@@ -70,5 +70,30 @@ namespace DorucovaciSluzba.Application.Implementation
             _appDbContext.SaveChanges();
             return true;
         }
+
+        public Zasilka? FindByCisloAndEmail(string cislo, string email)
+        {
+            return _appDbContext.Zasilky
+                .Include(z => z.Odesilatel)
+                .Include(z => z.Prijemce)
+                .Include(z => z.Kuryr)
+                .Include(z => z.Stav)
+                .FirstOrDefault(z =>
+                    z.Cislo == cislo &&
+                    (z.Odesilatel!.Email.ToLower() == email.ToLower() ||
+                     z.Prijemce!.Email.ToLower() == email.ToLower())
+                );
+        }
+
+        public Zasilka? GetById(int id)
+        {
+            return _appDbContext.Zasilky
+                .Include(z => z.Odesilatel)
+                .Include(z => z.Prijemce)
+                .Include(z => z.Kuryr)
+                .Include(z => z.Stav)
+                .FirstOrDefault(z => z.Id == id);
+        }
+
     }
 }

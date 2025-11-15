@@ -1,8 +1,47 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Doručovací služba";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container mt-5 mb-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-normal">Doručovací služba</h1>
+    </div>
+
+    <div class="row justify-content-center g-4 mt-5">
+
+        <!-- POSLAT BALÍK -->
+        <div class="col-md-5">
+            <div class="card shadow-lg h-100 text-center border-primary">
+                <div class="card-body d-flex flex-column justify-content-center p-5">
+                    <h3 class="card-title mt-3 mb-3">
+                        Poslat balík
+                    </h3>
+                    <p class="card-text text-muted mb-4">
+                        Vyplňte formulář a odešlete zásilku
+                    </p>
+                    <a asp-area="Admin" asp-controller="Package" asp-action="Create" class="btn btn-primary btn-lg">
+                        Odeslat zásilku
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- VYHLEDAT ZÁSILKU -->
+        <div class="col-md-5">
+            <div class="card shadow-lg h-100 text-center border-dark">
+                <div class="card-body d-flex flex-column justify-content-center p-5">
+                    <h3 class="card-title mt-3 mb-3">
+                        Vyhledat zásilku
+                    </h3>
+                    <p class="card-text text-muted mb-4">
+                        Sledujte stav vaší zásilky online
+                    </p>
+                    <a asp-area="Admin" asp-controller="Package" asp-action="Track" class="btn btn-light btn-lg btn-outline-primary">
+                        Sledovat zásilku
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
 </div>

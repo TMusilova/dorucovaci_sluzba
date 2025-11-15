@@ -7,5 +7,8 @@ namespace DorucovaciSluzba.Application.Abstraction
         IList<Zasilka> Select();
         void Create(Zasilka zasilka);
         bool Delete(int zasilkaId);
+
+        Zasilka? FindByCisloAndEmail(string cislo, string email);
+        Zasilka? GetById(int id);
     }
 }

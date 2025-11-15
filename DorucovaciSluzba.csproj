@@ -24,7 +24,6 @@
 
   <ItemGroup>
     <Folder Include="DorucovaciSluzba.Application\" />
-	<Folder Include="Models\Package\" />
   </ItemGroup>
   <ItemGroup>
 	<FrameworkReference Include="Microsoft.AspNetCore.App" />

@@ -96,5 +96,58 @@ namespace DorucovaciSluzba.Areas.Admin.Controllers
                 return NotFound();
             }
         }
+
+        [HttpGet]
+        public IActionResult Track()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Track(TrackPackageViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            try
+            {
+                var zasilka = _packageAppService.FindByCisloAndEmail(
+                    model.CisloZasilky,
+                    model.Email
+                );
+
+                if (zasilka == null)
+                {
+                    ModelState.AddModelError("", "Zásilka nebyla nalezena. Zkontrolujte číslo zásilky a e-mail.");
+                    return View(model);
+                }
+
+                // Přesměruj na detail zásilky
+                return RedirectToAction("Detail", new { id = zasilka.Id });
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", $"Chyba při vyhledávání: {ex.Message}");
+                return View(model);
+            }
+        }
+
+        [HttpGet]
+        public IActionResult Detail(int id)
+        {
+            var zasilka = _packageAppService.GetById(id);
+
+            if (zasilka == null)
+            {
+                return NotFound();
+            }
+
+            return View(zasilka);
+        }
     }
 }
+
+
