@@ -17,5 +17,9 @@ namespace DorucovaciSluzba.Application.Abstraction
         Uzivatel GetOrCreate(string jmeno, string prijmeni, string email,
             string ulice, string cp, string mesto, string psc);
         bool Delete(int id);
+
+        Uzivatel? GetById(int id);
+
+        IList<TypUzivatel> GetAllUserTypes();
     }
 }

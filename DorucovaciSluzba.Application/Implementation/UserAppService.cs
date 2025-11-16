@@ -107,5 +107,19 @@ namespace DorucovaciSluzba.Application.Implementation
                 return false;
             }
         }
+
+        public Uzivatel? GetById(int id)
+        {
+            return _appDbContext.Uzivatele
+                .Include(u => u.Typ) // Načti i typ/roli uživatele
+                .FirstOrDefault(u => u.Id == id);
+        }
+
+        public IList<TypUzivatel> GetAllUserTypes()
+        {
+            return _appDbContext.TypyUzivatelu
+                .OrderBy(t => t.Typ) // Seřaď podle názvu
+                .ToList();
+        }
     }
 }

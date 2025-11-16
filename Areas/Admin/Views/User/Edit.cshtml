@@ -1,0 +1,132 @@
+﻿@model DorucovaciSluzba.Models.User.EditUserViewModel
+
+@{
+    ViewData["Title"] = "Úprava uživatele";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <h1 class="mb-4 text-center">@ViewData["Title"]</h1>
+
+            <form asp-action="Edit" method="post" class="needs-validation" novalidate>
+                <input type="hidden" asp-for="Id" />
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                <!-- OSOBNÍ ÚDAJE -->
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0 text-center">Osobní údaje</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <!-- Jmeno -->
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Jmeno" class="form-label fw-bold"></label>
+                                <input asp-for="Jmeno" class="form-control" />
+                                <span asp-validation-for="Jmeno" class="text-danger small"></span>
+                            </div>
+                            <!-- Prijmeni -->
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Prijmeni" class="form-label fw-bold"></label>
+                                <input asp-for="Prijmeni" class="form-control" />
+                                <span asp-validation-for="Prijmeni" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <!-- E-mail -->
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Email" class="form-label fw-bold"></label>
+                                <input asp-for="Email" type="email" class="form-control" />
+                                <span asp-validation-for="Email" class="text-danger small"></span>
+                            </div>
+                            <!-- Telefon -->
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Telefon" class="form-label fw-bold"></label>
+                                <input asp-for="Telefon" type="tel" class="form-control" placeholder="123 456 789" />
+                                <span asp-validation-for="Telefon" class="text-danger small"></span>
+                            </div>
+                        </div>
+                        <!-- Datum narození -->
+                        <div class="mb-3">
+                            <label asp-for="DatumNarozeni" class="form-label fw-bold"></label>
+                            <input asp-for="DatumNarozeni" type="date" class="form-control" />
+                            <span asp-validation-for="DatumNarozeni" class="text-danger small"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ADRESA -->
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-header bg-dark text-white">
+                        <h4 class="mb-0 text-center">Adresa</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <!-- Ulice -->
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Ulice" class="form-label fw-bold"></label>
+                                <input asp-for="Ulice" class="form-control" placeholder="Např. Hlavní" />
+                                <span asp-validation-for="Ulice" class="text-danger small"></span>
+                            </div>
+                            <!-- CP -->
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="CP" class="form-label fw-bold"></label>
+                                <input asp-for="CP" class="form-control" placeholder="Např. 123" />
+                                <span asp-validation-for="CP" class="text-danger small"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <!-- Město -->
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Mesto" class="form-label fw-bold"></label>
+                                <input asp-for="Mesto" class="form-control" placeholder="Např. Praha" />
+                                <span asp-validation-for="Mesto" class="text-danger small"></span>
+                            </div>
+                            <!-- PSČ -->
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Psc" class="form-label fw-bold"></label>
+                                <input asp-for="Psc" class="form-control" placeholder="123 45" maxlength="6" />
+                                <span asp-validation-for="Psc" class="text-danger small"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ROLE -->
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-header bg-light text-dark">
+                        <h4 class="mb-0 text-center">Role uživatele</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label asp-for="TypId" class="form-label fw-bold"></label>
+                            <select asp-for="TypId" class="form-select">
+                                @foreach (var role in Model.DostupneRole ?? new List<TypUzivatel>())
+                                {
+                                    <option value="@role.Id">@role.Typ</option>
+                                }
+                            </select>
+                            <span asp-validation-for="TypId" class="text-danger small"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TLAČÍTKA -->
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end mb-4">
+                    <a asp-action="Select" class="btn btn-secondary btn-lg">
+                         Zrušit
+                    </a>
+                    <button type="submit" class="btn btn-primary btn-lg">
+                         Uložit změny
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
