@@ -95,5 +95,35 @@ namespace DorucovaciSluzba.Application.Implementation
                 .FirstOrDefault(z => z.Id == id);
         }
 
+        public void Update(Zasilka zasilka)
+        {
+            var existujiciZasilka = _appDbContext.Zasilky.Find(zasilka.Id);
+
+            if (existujiciZasilka == null)
+            {
+                throw new Exception("Zásilka nebyla nalezena.");
+            }
+
+            existujiciZasilka.StavId = zasilka.StavId;
+            existujiciZasilka.KuryrId = zasilka.KuryrId;
+
+            _appDbContext.SaveChanges();
+        }
+
+        public IList<Uzivatel> GetAllCouriers()
+        {
+            return _appDbContext.Uzivatele
+                .Where(u => u.TypId == 3) // TypId 3 = Kurýr
+                .OrderBy(u => u.Prijmeni)
+                .ThenBy(u => u.Jmeno)
+                .ToList();
+        }
+
+        public IList<StavZasilka> GetAllStates()
+        {
+            return _appDbContext.StavyZasilek
+                .OrderBy(s => s.Id)
+                .ToList();
+        }
     }
 }

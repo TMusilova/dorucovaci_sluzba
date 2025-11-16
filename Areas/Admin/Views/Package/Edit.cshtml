@@ -1,0 +1,126 @@
+﻿@model DorucovaciSluzba.Models.Package.EditZasilkaViewModel
+
+@{
+    ViewData["Title"] = "Úprava zásilky";
+    var returnUrl = ViewBag.ReturnUrl as string;
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <h1 class="mb-4 text-center">@ViewData["Title"]</h1>
+
+            <form asp-action="Edit" method="post" class="needs-validation" novalidate>
+                <input type="hidden" asp-for="Id" />
+
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                <div class="row">
+                    <!-- INFORMACE O ZÁSILCE (readonly) -->
+                    <div class="col-6">
+                        <div class="card shadow-sm mb-4">
+                            <div class="mb-0 card-header bg-dark text-white">
+                                <h4 class="mb-0 text-center">Informace o zásilce</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-2">
+                                    <label class="form-label fw-bold mb-1">Číslo zásilky:</label>
+                                    <p class="mb-0">@Model.Cislo</p>
+                                </div>
+                                <hr class="my-2" />
+
+                                <div class="mb-2">
+                                    <label class="form-label fw-bold mb-1">Datum odeslání:</label>
+                                    <p class="mb-0">@Model.DatumOdeslani.ToString("dd.MM.yyyy HH:mm")</p>
+                                </div>
+                                <hr class="my-2" />
+
+                                <div class="mb-2">
+                                    <label class="form-label fw-bold mb-1">Odesílatel:</label>
+                                    <p class="mb-0">@Model.OdesilatelJmeno</p>
+                                </div>
+                                <hr class="my-2" />
+
+                                <div class="mb-2">
+                                    <label class="form-label fw-bold mb-1">Příjemce:</label>
+                                    <p class="mb-0">@Model.PrijemceJmeno</p>
+                                </div>
+                                <hr class="my-2" />
+
+                                <div class="mb-0">
+                                    <label class="form-label fw-bold mb-1">Adresa doručení:</label>
+                                    <p class="mb-0">@Model.DestinaceAdresa</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- STAV ZÁSILKY (editovatelný) -->
+                    <div class="col-6">
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-header bg-dark text-white">
+                                <h4 class="mb-0 text-center">Stav zásilky</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label asp-for="StavId" class="form-label fw-bold"></label>
+                                    <select asp-for="StavId" class="form-select">
+                                        @foreach (var stav in Model.DostupneStavy ?? new List<DorucovaciSluzba.Domain.Entities.StavZasilka>())
+                                        {
+                                            <option value="@stav.Id">@stav.Stav</option>
+                                        }
+                                    </select>
+                                    <span asp-validation-for="StavId" class="text-danger small"></span>
+                                    <div class="form-text">
+                                        Změňte stav podle aktuální situace zásilky.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- KURÝR (editovatelný) -->
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-header bg-light text-dark">
+                                <h4 class="mb-0 text-center">Přiřazení kurýra</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label asp-for="KuryrId" class="form-label fw-bold"></label>
+                                    <select asp-for="KuryrId" class="form-select">
+                                        <option value="">-- Nepřiřazen --</option>
+                                        @foreach (var kuryr in Model.DostupniKuryri ?? new List<DorucovaciSluzba.Domain.Entities.Uzivatel>())
+                                        {
+                                            <option value="@kuryr.Id">
+                                                @kuryr.Jmeno @kuryr.Prijmeni
+                                            </option>
+                                        }
+                                    </select>
+                                    <span asp-validation-for="KuryrId" class="text-danger small"></span>
+                                    <div class="form-text">
+                                        Vyberte kurýra, který má zásilku doručit.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <!-- TLAČÍTKA -->
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end mb-4">
+                    <a asp-action="Select" class="btn btn-secondary btn-lg">
+                        Zrušit
+                    </a>
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        Uložit změny
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

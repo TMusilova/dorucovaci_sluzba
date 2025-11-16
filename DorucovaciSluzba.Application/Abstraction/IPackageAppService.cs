@@ -10,5 +10,10 @@ namespace DorucovaciSluzba.Application.Abstraction
 
         Zasilka? FindByCisloAndEmail(string cislo, string email);
         Zasilka? GetById(int id);
+        void Update(Zasilka zasilka);
+
+        IList<Uzivatel> GetAllCouriers();
+
+        IList<StavZasilka> GetAllStates();
     }
 }
