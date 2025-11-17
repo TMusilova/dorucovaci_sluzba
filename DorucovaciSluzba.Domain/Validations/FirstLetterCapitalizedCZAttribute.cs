@@ -1,9 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace DorucovaciSluzba.Domain.Validations
 {
-    public class FirstLetterCapitalizedCZAttribute : ValidationAttribute
+    public class FirstLetterCapitalizedCZAttribute : ValidationAttribute, IClientModelValidator
     {
         public FirstLetterCapitalizedCZAttribute()
         {
@@ -18,6 +19,12 @@ namespace DorucovaciSluzba.Domain.Validations
 
             // Musí začínat velkým písmenem a obsahovat pouze české znaky
             return Regex.IsMatch(input, @"^[A-ZÁČĎÉĚÍŇÓŘŠŤÚŮÝŽ][a-záčďéěíňóřšťúůýž]+$");
+        }
+
+        public void AddValidation(ClientModelValidationContext context)
+        {
+            context.Attributes["data-val"] = "true";
+            context.Attributes["data-val-firstlettercz"] = ErrorMessage;
         }
     }
 }

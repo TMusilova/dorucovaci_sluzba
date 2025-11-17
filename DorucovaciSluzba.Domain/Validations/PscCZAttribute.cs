@@ -1,9 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace DorucovaciSluzba.Domain.Validations
 {
-    public class PscCZAttribute : ValidationAttribute
+    public class PscCZAttribute : ValidationAttribute, IClientModelValidator
     {
         public PscCZAttribute()
         {
@@ -18,6 +19,11 @@ namespace DorucovaciSluzba.Domain.Validations
 
             // PSČ musí obsahovat přesně 5 číslic
             return Regex.IsMatch(input, @"^\d{5}|\d{3}\s\d{2}$");
+        }
+        public void AddValidation(ClientModelValidationContext context)
+        {
+            context.Attributes["data-val"] = "true";
+            context.Attributes["data-val-psccz"] = ErrorMessage;
         }
     }
 }

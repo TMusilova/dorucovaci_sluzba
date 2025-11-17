@@ -87,7 +87,7 @@
                             <!-- PSČ -->
                             <div class="col-md-6 mb-3">
                                 <label asp-for="Psc" class="form-label fw-bold"></label>
-                                <input asp-for="Psc" class="form-control" placeholder="123 45" maxlength="6" />
+                                <input asp-for="Psc" class="form-control" placeholder="123 45" />
                                 <span asp-validation-for="Psc" class="text-danger small"></span>
                             </div>
                         </div>
@@ -129,4 +129,11 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script src="~/js/Validation/FirstLetterCZ.js"></script>
+    <script src="~/js/Validation/EmailCZ.js"></script>
+    <script src="~/js/Validation/PhoneCZ.js"></script>
+    <script src="~/js/Validation/CpCZ.js"></script>
+    <script src="~/js/Validation/PscCZ.js"></script>
+
 }

@@ -1,9 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace DorucovaciSluzba.Domain.Validations
 {
-    public class EmailCZAttribute : ValidationAttribute
+    public class EmailCZAttribute : ValidationAttribute, IClientModelValidator
     {
         public EmailCZAttribute()
         {
@@ -19,5 +20,11 @@ namespace DorucovaciSluzba.Domain.Validations
             // Pouze čísla od 1 do 4 číslic
             return Regex.IsMatch(input, @"^[^@\s]+@[^@\s]+\.[a-zA-Z]{2,63}$");
         }
+        public void AddValidation(ClientModelValidationContext context)
+        {
+            context.Attributes["data-val"] = "true";
+            context.Attributes["data-val-emailcz"] = ErrorMessage;
+        }
+
     }
 }

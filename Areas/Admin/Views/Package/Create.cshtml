@@ -4,9 +4,6 @@
     ViewData["Title"] = "Vytvoření zásilky";
 }
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-iconscss
-
-
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-lg-6 col-md-8">
@@ -149,3 +146,12 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script src="~/js/Validation/FirstLetterCZ.js"></script>
+    <script src="~/js/Validation/EmailCZ.js"></script>
+    <script src="~/js/Validation/CPcz.js"></script>
+    <script src="~/js/Validation/PscCZ.js"></script>
+}
