@@ -23,7 +23,6 @@ namespace DorucovaciSluzba.Models.Package
         public string DestinaceAdresa { get; set; } = string.Empty;
 
         // EDITOVATELNÉ POLE: STAV
-        [Required(ErrorMessage = "Stav je povinný")]
         [Display(Name = "Stav zásilky")]
         public int StavId { get; set; }
 

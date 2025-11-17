@@ -15,8 +15,11 @@
 
                     @if (!ViewData.ModelState.IsValid && ViewData.ModelState.ErrorCount > 0)
                     {
-                        <div class="alert alert-danger">
-                            @Html.ValidationSummary(false, "", new { @class = "mb-0" })
+                        <div class="text-center text-danger">
+                            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                            {
+                                <p class="mb-2">@error.ErrorMessage</p>
+                            }
                         </div>
                     }
 
