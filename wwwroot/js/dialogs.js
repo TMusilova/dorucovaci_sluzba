@@ -1,3 +1,7 @@
-﻿function ConfirmDelete() {
-    return confirm("Are you sure?");
+﻿function ConfirmDeleteUser() {
+    return confirm("Opravdu chcete smazat uživatele?");
+}
+
+function ConfirmDeletePackage() {
+    return confirm("Opravdu chcete smazat zásilku?");
 }
