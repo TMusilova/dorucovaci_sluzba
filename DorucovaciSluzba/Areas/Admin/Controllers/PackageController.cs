@@ -2,7 +2,8 @@
 using DorucovaciSluzba.Domain.Entities;
 using DorucovaciSluzba.Application.Abstraction;
 using DorucovaciSluzba.Models.Package;
-using System.Security.Cryptography.X509Certificates;
+using DorucovaciSluzba.Infrastructure.Identity;
+using Microsoft.AspNetCore.Identity;
 
 namespace DorucovaciSluzba.Areas.Admin.Controllers
 {
@@ -10,17 +11,38 @@ namespace DorucovaciSluzba.Areas.Admin.Controllers
     public class PackageController : Controller
     {
         IPackageAppService _packageAppService;
-        IUserAppService _userAppService;
+        UserManager<User> _userManager;
 
-        public PackageController(IPackageAppService packageAppService, IUserAppService userAppService)
+        public PackageController(IPackageAppService packageAppService, UserManager<User> userManager)
         {
             _packageAppService = packageAppService;
-            _userAppService = userAppService;
+            _userManager = userManager;
         }
 
-        public IActionResult Select()
+        public async Task<IActionResult> Select()
         {
             IList<Zasilka> packages = _packageAppService.Select();
+
+            // NOVÉ: Načti všechny uživatele najednou (efektivnější než po jednom)
+            var userIds = packages
+                .SelectMany(z => new[] { z.OdesilatelId, z.PrijemceId, z.KuryrId ?? 0 })
+                .Distinct()
+                .Where(id => id > 0)
+                .ToList();
+
+            var users = new Dictionary<int, User>();
+            foreach (var id in userIds)
+            {
+                var user = await _userManager.FindByIdAsync(id.ToString());
+                if (user != null)
+                {
+                    users[id] = user;
+                }
+            }
+
+            // Předej uživatele do ViewBag
+            ViewBag.Users = users;
+
             return View(packages);
         }
 
@@ -31,7 +53,7 @@ namespace DorucovaciSluzba.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(CreateZasilkaViewModel model)
+        public async Task<IActionResult> Create(CreateZasilkaViewModel model)
         {
             // Validace modelu
             if(!ModelState.IsValid)
@@ -41,7 +63,7 @@ namespace DorucovaciSluzba.Areas.Admin.Controllers
             try
             {
                 // Najdi nebo vytvoř odesílatele
-                var odesilatel = _userAppService.GetOrCreate(
+                var odesilatel = await GetOrCreateUserAsync(
                     model.OdesilatelJmeno,
                     model.OdesilatelPrijmeni,
                     model.OdesilatelEmail,
@@ -52,7 +74,7 @@ namespace DorucovaciSluzba.Areas.Admin.Controllers
                 );
 
                 // Najdi nebo vytvoř příjemce
-                var prijemce = _userAppService.GetOrCreate(
+                var prijemce = await GetOrCreateUserAsync(
                     model.PrijemceJmeno,
                     model.PrijemcePrijmeni,
                     model.PrijemceEmail,
@@ -84,6 +106,56 @@ namespace DorucovaciSluzba.Areas.Admin.Controllers
             }
         }
 
+        private async Task<User> GetOrCreateUserAsync(
+            string jmeno, string prijmeni, string email,
+            string ulice, string cp, string mesto, string psc)
+        {
+            // Zkus najít podle emailu
+            var existujici = await _userManager.FindByEmailAsync(email);
+
+            if (existujici != null)
+            {
+                // Aktualizuj adresu, pokud se změnila
+                bool zmeneno = false;
+
+                if (existujici.Ulice != ulice) { existujici.Ulice = ulice; zmeneno = true; }
+                if (existujici.CP != cp) { existujici.CP = cp; zmeneno = true; }
+                if (existujici.Mesto != mesto) { existujici.Mesto = mesto; zmeneno = true; }
+                if (existujici.Psc != psc) { existujici.Psc = psc; zmeneno = true; }
+
+                if (zmeneno)
+                {
+                    await _userManager.UpdateAsync(existujici);
+                }
+
+                return existujici;
+            }
+
+            // Vytvoř nového uživatele
+            var novy = new User
+            {
+                UserName = email.Split('@')[0],
+                Email = email,
+                FirstName = jmeno,
+                LastName = prijmeni,
+                Ulice = ulice,
+                CP = cp,
+                Mesto = mesto,
+                Psc = psc,
+                EmailConfirmed = false
+            };
+
+            var result = await _userManager.CreateAsync(novy, "Temp123!");
+
+            if (result.Succeeded)
+            {
+                await _userManager.AddToRoleAsync(novy, "Uzivatel");
+                return novy;
+            }
+
+            throw new Exception($"Nepodařilo se vytvořit uživatele: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+        }
+
         public IActionResult Delete(int id)
         {
             bool deleted = _packageAppService.Delete(id);
@@ -104,7 +176,7 @@ namespace DorucovaciSluzba.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Track(TrackPackageViewModel model)
+        public async Task<IActionResult> Track(TrackPackageViewModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -124,7 +196,17 @@ namespace DorucovaciSluzba.Areas.Admin.Controllers
                     return View(model);
                 }
 
-                // Přesměruj na detail zásilky
+                // ZMĚNA: Ověř, že email patří odesílateli nebo příjemci
+                var odesilatel = await _userManager.FindByIdAsync(zasilka.OdesilatelId.ToString());
+                var prijemce = await _userManager.FindByIdAsync(zasilka.PrijemceId.ToString());
+
+                if (odesilatel?.Email.ToLower() != model.Email.ToLower() &&
+                    prijemce?.Email.ToLower() != model.Email.ToLower())
+                {
+                    ModelState.AddModelError("", "Zásilka nebyla nalezena. Zkontrolujte číslo zásilky a e-mail.");
+                    return View(model);
+                }
+
                 return RedirectToAction("Detail", new { id = zasilka.Id });
             }
             catch (Exception ex)
@@ -135,7 +217,7 @@ namespace DorucovaciSluzba.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public IActionResult Detail(int id)
+        public async Task<IActionResult> Detail(int id)
         {
             var zasilka = _packageAppService.GetById(id);
 
@@ -143,12 +225,26 @@ namespace DorucovaciSluzba.Areas.Admin.Controllers
             {
                 return NotFound();
             }
+
+            // NOVÉ: Načti uživatele z UserManager
+            var odesilatel = await _userManager.FindByIdAsync(zasilka.OdesilatelId.ToString());
+            var prijemce = await _userManager.FindByIdAsync(zasilka.PrijemceId.ToString());
+            User? kuryr = null;
+            if (zasilka.KuryrId.HasValue)
+            {
+                kuryr = await _userManager.FindByIdAsync(zasilka.KuryrId.Value.ToString());
+            }
+
+            // Předej do ViewBag
+            ViewBag.Odesilatel = odesilatel;
+            ViewBag.Prijemce = prijemce;
+            ViewBag.Kuryr = kuryr;
 
             return View(zasilka);
         }
 
         [HttpGet]
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
             var zasilka = _packageAppService.GetById(id);
 
@@ -157,25 +253,24 @@ namespace DorucovaciSluzba.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            // Převeď entitu na ViewModel
-            var viewModel = new EditZasilkaViewModel
+            // NOVÉ: Načti uživatele
+            var odesilatel = await _userManager.FindByIdAsync(zasilka.OdesilatelId.ToString());
+            var prijemce = await _userManager.FindByIdAsync(zasilka.PrijemceId.ToString());
+
+            var viewModel = new EditUserViewModel
             {
                 Id = zasilka.Id,
                 Cislo = zasilka.Cislo,
                 DatumOdeslani = zasilka.DatumOdeslani,
-                OdesilatelJmeno = $"{zasilka.Odesilatel?.Jmeno} {zasilka.Odesilatel?.Prijmeni}",
-                PrijemceJmeno = $"{zasilka.Prijemce?.Jmeno} {zasilka.Prijemce?.Prijmeni}",
-
-                // Adresa jako string (readonly, pro zobrazení)
+                OdesilatelJmeno = $"{odesilatel?.FirstName} {odesilatel?.LastName}",
+                PrijemceJmeno = $"{prijemce?.FirstName} {prijemce?.LastName}",
                 DestinaceAdresa = $"{zasilka.DestinaceUlice} {zasilka.DestinaceCP}, {zasilka.DestinaceMesto}, {zasilka.DestinacePsc}",
-
-                // Editovatelné hodnoty
                 StavId = zasilka.StavId,
                 KuryrId = zasilka.KuryrId,
-
-                // Data pro dropdowny
                 DostupneStavy = _packageAppService.GetAllStates().ToList(),
-                DostupniKuryri = _packageAppService.GetAllCouriers().ToList()
+
+                // ZMĚNA: Načti kurýry z UserManager
+                DostupniKuryri = (await _userManager.GetUsersInRoleAsync("Kuryr")).ToList()
             };
 
             return View(viewModel);
@@ -183,13 +278,12 @@ namespace DorucovaciSluzba.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(EditZasilkaViewModel model)
+        public IActionResult Edit(EditUserViewModel model)
         {
             if (!ModelState.IsValid)
             {
-                // Znovu načti data pro dropdowny
                 model.DostupneStavy = _packageAppService.GetAllStates().ToList();
-                model.DostupniKuryri = _packageAppService.GetAllCouriers().ToList();
+                model.DostupniKuryri = _userManager.GetUsersInRoleAsync("Kuryr").Result.ToList();
                 return View(model);
             }
 
@@ -204,7 +298,7 @@ namespace DorucovaciSluzba.Areas.Admin.Controllers
 
                 _packageAppService.Update(zasilka);
 
-                TempData["SuccessMessage"] = $"Zásilka {zasilka.Cislo} byla úspěšně aktualizována!";
+                TempData["SuccessMessage"] = $"Zásilka byla úspěšně aktualizována!";
 
                 return RedirectToAction("Select");
             }
@@ -212,7 +306,7 @@ namespace DorucovaciSluzba.Areas.Admin.Controllers
             {
                 ModelState.AddModelError("", $"Chyba při aktualizaci: {ex.Message}");
                 model.DostupneStavy = _packageAppService.GetAllStates().ToList();
-                model.DostupniKuryri = _packageAppService.GetAllCouriers().ToList();
+                model.DostupniKuryri = _userManager.GetUsersInRoleAsync("Kuryr").Result.ToList();
                 return View(model);
             }
         }

@@ -1,65 +1,64 @@
-﻿@model IList<Uzivatel>
-
+﻿@model IList<DorucovaciSluzba.Infrastructure.Identity.User>
 
 @{
     ViewData["Title"] = "Správa uživatelů";
+    var userRoles = ViewBag.UserRoles as Dictionary<int, IList<string>>;
 }
 
 <h1>@ViewData["Title"]</h1>
 
-
-@{
-    if (Model != null && Model.Count > 0)
-    {
-        <table class="table">
-            <thead>
+@if (Model != null && Model.Count > 0)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Jméno</th>
+                <th>Příjmení</th>
+                <th>E-mail</th>
+                <th>Username</th>
+                <th>Telefon</th>
+                <th>Adresa</th>
+                <th>Role</th>
+                <th>Akce</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in Model)
+            {
                 <tr>
-                    <th scope="col">ID</th>
-                    <th scope="col">Jméno</th>
-                    <th scope="col">Příjmení</th>
-                    <th scope="col">E-mail</th>
-                    <th scope="col">Heslo</th>
-                    <th scope="col">Datum narození</th>
-                    <th scope="col">Telefon</th>
-                    <th scope="col">Adresa</th>
-                    <th scope="col">Typ uživatele</th>
-                    <th scope="col">Akce</th>
-
+                    <td>@user.Id</td>
+                    <td>@user.FirstName</td>
+                    <td>@user.LastName</td>
+                    <td>@user.Email</td>
+                    <td>@user.UserName</td>
+                    <td>@user.Telefon</td>
+                    <td>
+                        @if (!string.IsNullOrEmpty(user.Ulice))
+                        {
+                            @($"{user.Ulice} {user.CP}, {user.Mesto}, {user.Psc}")
+                        }
+                    </td>
+                    <td>
+                        @if (userRoles != null && userRoles.ContainsKey(user.Id))
+                        {
+                            @string.Join(", ", userRoles[user.Id])
+                        }
+                    </td>
+                    <td>
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a asp-action="Delete" class="btn btn-outline-danger" asp-route-id="@user.Id" onclick="return ConfirmUserPackage();">Smazat</a>
+                            <a asp-action="Edit" class="btn btn-outline-warning" asp-route-id="@user.Id">Upravit</a>
+                        </div>
+                    </td>
                 </tr>
-            </thead>
-            <tbody>
-
-                @foreach (var uzivatel in Model)
-                {
-                    <tr>
-                        <th>@uzivatel.Id</th>
-                        <td>@uzivatel.Jmeno</td>
-                        <td>@uzivatel.Prijmeni</td>
-                        <td>@uzivatel.Email</td>
-                        <td>@uzivatel.Heslo</td>
-                        <td>@uzivatel.DatumNarozeni?.ToString("dd.MM.yyyy")</td>
-                        <td>@uzivatel.Telefon</td>
-                        <td>
-                            @if (uzivatel.Ulice != null)
-                            {
-                                @($"{uzivatel.Ulice} {uzivatel.CP}, {uzivatel.Mesto}, {uzivatel.Psc}")
-                            }
-                        </td>
-                        <td>@uzivatel.Typ?.Typ</td>
-                        <td>
-                            <a asp-action="Delete" class="btn btn-outline-danger" asp-route-id="@uzivatel.Id" onclick="return ConfirmDeleteUser();">Smazat</a>
-                            <a asp-action="Edit" class="btn btn-outline-warning" asp-route-id="@uzivatel.Id">Upravit</a>
-                        </td>
-                    </tr>
-                }
-
-            </tbody>
-        </table>
-    }
-    else
-    {
-        <p>User table is empty!</p>
-    }
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>Žádní uživatelé nebyli nalezeni.</p>
 }
 
 @section Scripts

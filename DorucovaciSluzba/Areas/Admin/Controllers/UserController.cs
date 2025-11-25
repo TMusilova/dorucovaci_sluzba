@@ -1,110 +1,160 @@
-﻿using DorucovaciSluzba.Application.Abstraction;
-using Microsoft.AspNetCore.Mvc;
-using DorucovaciSluzba.Domain.Entities;
+﻿using DorucovaciSluzba.Infrastructure.Identity;
 using DorucovaciSluzba.Models.User;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 
 namespace DorucovaciSluzba.Areas.Admin.Controllers
 {
     [Area("Admin")]
     public class UserController : Controller
     {
-        IUserAppService _userAppService;
+        private readonly UserManager<User> _userManager;
+        private readonly RoleManager<Role> _roleManager;
 
-        public UserController(IUserAppService userAppService)
+        public UserController(UserManager<User> userManager, RoleManager<Role> roleManager)
         {
-            _userAppService = userAppService;
+            _userManager = userManager;
+            _roleManager = roleManager;
         }
 
-        public IActionResult Select()
+        // Výpis všech uživatelů
+        public async Task<IActionResult> Select()
         {
-            IList<Uzivatel> users = _userAppService.Select();
+            var users = _userManager.Users.ToList();
+
+            // Pro každého uživatele načti jeho role
+            var userRoles = new Dictionary<int, IList<string>>();
+            foreach (var user in users)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                userRoles[user.Id] = roles;
+            }
+
+            ViewBag.UserRoles = userRoles;
             return View(users);
         }
 
-        public IActionResult Delete(int id)
-        {
-            bool deleted = _userAppService.Delete(id);
-
-            if (deleted)
-            {
-                return RedirectToAction(nameof(UserController.Select));
-            }
-            else
-            {
-                return NotFound();
-            }
-        }
-
-
+        // EDIT - GET
         [HttpGet]
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            var uzivatel = _userAppService.GetById(id);
-
-            if (uzivatel == null)
+            var user = await _userManager.FindByIdAsync(id.ToString());
+            if (user == null)
             {
                 return NotFound();
+            }
+
+            // Zjisti aktuální roli uživatele
+            var userRoles = await _userManager.GetRolesAsync(user);
+            var currentRole = userRoles.FirstOrDefault();
+            var roleId = 0;
+
+            if (!string.IsNullOrEmpty(currentRole))
+            {
+                var role = await _roleManager.FindByNameAsync(currentRole);
+                roleId = role?.Id ?? 0;
             }
 
             var viewModel = new EditUserViewModel
             {
-                Id = uzivatel.Id,
-                Jmeno = uzivatel.Jmeno,
-                Prijmeni = uzivatel.Prijmeni,
-                Email = uzivatel.Email,
-                Telefon = uzivatel.Telefon,
-                DatumNarozeni = uzivatel.DatumNarozeni,
-                Ulice = uzivatel.Ulice,
-                CP = uzivatel.CP,
-                Mesto = uzivatel.Mesto,
-                Psc = uzivatel.Psc,
-                TypId = uzivatel.TypId,
-                DostupneRole = _userAppService.GetAllUserTypes().ToList()
+                Id = user.Id,
+                FirstName = user.FirstName ?? string.Empty,
+                LastName = user.LastName ?? string.Empty,
+                Email = user.Email ?? string.Empty,
+                Telefon = user.Telefon,
+                DatumNarozeni = user.DatumNarozeni,
+                Ulice = user.Ulice,
+                CP = user.CP,
+                Mesto = user.Mesto,
+                Psc = user.Psc,
+                RoleId = roleId,
+                DostupneRole = _roleManager.Roles.ToList()
             };
 
             return View(viewModel);
         }
 
+        // EDIT - POST
         [HttpPost]
-        public IActionResult Edit(EditUserViewModel model)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(EditUserViewModel model)
         {
             if (!ModelState.IsValid)
             {
-                // Znovu načti role pro dropdown
-                model.DostupneRole = _userAppService.GetAllUserTypes().ToList();
+                model.DostupneRole = _roleManager.Roles.ToList();
                 return View(model);
             }
 
-            try
+            var user = await _userManager.FindByIdAsync(model.Id.ToString());
+            if (user == null)
             {
-                var uzivatel = _userAppService.GetById(model.Id);
+                return NotFound();
+            }
 
-                if (uzivatel == null)
+            // Automaticky generuje UserName z emailu
+            var userName = model.Email.Split('@')[0];
+
+            // Aktualizuj data uživatele
+            user.FirstName = model.FirstName;
+            user.LastName = model.LastName;
+            user.Email = model.Email;
+            user.NormalizedEmail = model.Email.ToUpper();
+            user.UserName = userName;
+            user.NormalizedUserName = userName.ToUpper();
+            user.Telefon = model.Telefon;
+            user.DatumNarozeni = model.DatumNarozeni;
+            user.Ulice = model.Ulice;
+            user.CP = model.CP;
+            user.Mesto = model.Mesto;
+            user.Psc = model.Psc;
+
+            var updateResult = await _userManager.UpdateAsync(user);
+            if (!updateResult.Succeeded)
+            {
+                foreach (var error in updateResult.Errors)
                 {
-                    return NotFound();
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+                model.DostupneRole = _roleManager.Roles.ToList();
+                return View(model);
+            }
+
+            // Aktualizuj roli
+            var currentRoles = await _userManager.GetRolesAsync(user);
+            var selectedRole = await _roleManager.FindByIdAsync(model.RoleId.ToString());
+
+            if (selectedRole != null)
+            {
+                // Odeber všechny staré role
+                if (currentRoles.Any())
+                {
+                    await _userManager.RemoveFromRolesAsync(user, currentRoles);
                 }
 
-                // Aktualizuj data
-                uzivatel.Jmeno = model.Jmeno;
-                uzivatel.Prijmeni = model.Prijmeni;
-                uzivatel.Email = model.Email;
-                uzivatel.Telefon = model.Telefon;
-                uzivatel.DatumNarozeni = model.DatumNarozeni;
-                uzivatel.Ulice = model.Ulice;
-                uzivatel.CP = model.CP;
-                uzivatel.Mesto = model.Mesto;
-                uzivatel.Psc = model.Psc;
-                uzivatel.TypId = model.TypId;
+                // Přidej novou roli
+                await _userManager.AddToRoleAsync(user, selectedRole.Name!);
+            }
 
-                _userAppService.Update(uzivatel);
-                return RedirectToAction("Select");
-            }
-            catch (Exception ex)
+            TempData["SuccessMessage"] = $"Uživatel {user.FirstName} {user.LastName} byl úspěšně aktualizován!";
+            return RedirectToAction(nameof(Select));
+        }
+
+        // Smazání uživatele
+        public async Task<IActionResult> Delete(int id)
+        {
+            var user = await _userManager.FindByIdAsync(id.ToString());
+            if (user == null)
             {
-                ModelState.AddModelError("", $"Chyba při aktualizaci: {ex.Message}");
-                model.DostupneRole = _userAppService.GetAllUserTypes().ToList();
-                return View(model);
+                return NotFound();
             }
+
+            var result = await _userManager.DeleteAsync(user);
+            if (result.Succeeded)
+            {
+                return RedirectToAction(nameof(Select));
+            }
+
+            return BadRequest("Nepodařilo se smazat uživatele.");
         }
     }
 }

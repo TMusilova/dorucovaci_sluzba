@@ -2,10 +2,10 @@
 
 @{
     ViewData["Title"] = "Správa zásilek";
+    var users = ViewBag.Users as Dictionary<int, DorucovaciSluzba.Infrastructure.Identity.User>;
 }
 
 <h1>@ViewData["Title"]</h1>
-
 
 @if (Model != null && Model.Count > 0)
 {
@@ -26,34 +26,53 @@
         <tbody>
             @foreach (var zasilka in Model)
             {
+                var odesilatel = users?.ContainsKey(zasilka.OdesilatelId) == true ? users[zasilka.OdesilatelId] : null;
+                var prijemce = users?.ContainsKey(zasilka.PrijemceId) == true ? users[zasilka.PrijemceId] : null;
+                var kuryr = zasilka.KuryrId.HasValue && users?.ContainsKey(zasilka.KuryrId.Value) == true ? users[zasilka.KuryrId.Value] : null;
+
                 <tr>
                     <td>@zasilka.Id</td>
                     <td>@zasilka.Cislo</td>
                     <td>@zasilka.DatumOdeslani.ToString("dd.MM.yyyy HH:mm")</td>
                     <td>
-                        @if (zasilka.Odesilatel != null)
+                        @if (odesilatel != null)
                         {
-                            @($"{zasilka.Odesilatel.Jmeno} {zasilka.Odesilatel.Prijmeni} ({zasilka.Odesilatel.Email})")
+                            @($"{odesilatel.FirstName} {odesilatel.LastName} ({odesilatel.Email})")
+                        }
+                        else
+                        {
+                            <text>ID: @zasilka.OdesilatelId</text>
                         }
                     </td>
                     <td>
-                        @if (zasilka.Prijemce != null)
+                        @if (prijemce != null)
                         {
-                            @($"{zasilka.Prijemce.Jmeno} {zasilka.Prijemce.Prijmeni} ({zasilka.Prijemce.Email})")
+                            @($"{prijemce.FirstName} {prijemce.LastName} ({prijemce.Email})")
+                        }
+                        else
+                        {
+                            <text>ID: @zasilka.PrijemceId</text>
                         }
                     </td>
                     <td>
-                        @if (zasilka.Prijemce != null)
+                        @zasilka.DestinaceUlice @zasilka.DestinaceCP,
+                        @zasilka.DestinaceMesto, @zasilka.DestinacePsc
+                    </td>
+                    <td>
+                        @if (kuryr != null)
                         {
-                            @($"{zasilka.Prijemce.Ulice} {zasilka.Prijemce.CP}, {zasilka.Prijemce.Mesto}, {zasilka.Prijemce.Psc}")
+                            @($"{kuryr.FirstName} {kuryr.LastName}")
+                        }
+                        else if (zasilka.KuryrId.HasValue)
+                        {
+                            <text>ID: @zasilka.KuryrId</text>
+                        }
+                        else
+                        {
+                            <text>—</text>
                         }
                     </td>
-                    <td>
-                        @zasilka.Kuryr?.Id
-                    </td>
-                    <td>
-                        @zasilka.Stav?.Stav
-                    </td>
+                    <td>@zasilka.Stav?.Stav</td>
                     <td>
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                             <a asp-action="Delete" class="btn btn-outline-danger" asp-route-id="@zasilka.Id" onclick="return ConfirmDeletePackage();">Smazat</a>
@@ -71,8 +90,8 @@ else
 }
 
 <div class="d-flex gap-2 justify-content-md-end mb-4">
-    <a asp-action="Create" class="btn btn-primary btn-lg">Vytvořit balík</a>
-    <a asp-action="Track" class="btn btn-secondary btn-lg">Vyhledat balík</a>
+    <a asp-action="Create" class="btn btn-primary btn-lg">Vytvořit zásilku</a>
+    <a asp-action="Track" class="btn btn-secondary btn-lg">Vyhledat zásilku</a>
 </div>
 
 @section Scripts

@@ -1,7 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
-using DorucovaciSluzba.Infrastructure.Database;
-using DorucovaciSluzba.Application.Abstraction;
+﻿using DorucovaciSluzba.Application.Abstraction;
 using DorucovaciSluzba.Application.Implementation;
+using DorucovaciSluzba.Infrastructure.Database;
+using DorucovaciSluzba.Infrastructure.Identity;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,16 +14,41 @@ builder.Services.AddControllersWithViews();
 string connectionString = builder.Configuration.GetConnectionString("MySQL");
 var serverVersion = ServerVersion.AutoDetect(connectionString);
 
-// Registrace AppDbContext
+// MigrationsAssembly
 builder.Services.AddDbContext<AppDbContext>(optionsBuilder =>
-    optionsBuilder.UseMySql(connectionString, serverVersion));
+    optionsBuilder.UseMySql(connectionString, serverVersion,
+        mySqlOptions => mySqlOptions.MigrationsAssembly("DorucovaciSluzba.Infrastructure")));
 
 // DŮLEŽITÉ: Registruj AppDbContext také jako DbContext (pro Application služby)
 builder.Services.AddScoped<DbContext>(provider => provider.GetRequiredService<AppDbContext>());
 
+// Identity
+builder.Services.AddIdentity<User, Role>(options =>
+{
+    options.Password.RequiredLength = 6;
+    options.Password.RequireDigit = true;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireNonAlphanumeric = false;
+
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+    options.Lockout.MaxFailedAccessAttempts = 5;
+
+    options.User.RequireUniqueEmail = true;
+})
+.AddEntityFrameworkStores<AppDbContext>()
+.AddDefaultTokenProviders();
+
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Security/Account/Login";
+    options.LogoutPath = "/Security/Account/Logout";
+    options.AccessDeniedPath = "/Security/Account/AccessDenied";
+    options.ExpireTimeSpan = TimeSpan.FromDays(7);
+    options.SlidingExpiration = true;
+});
+
 // Registrace Application Services
 builder.Services.AddScoped<IPackageAppService, PackageAppService>();
-builder.Services.AddScoped<IUserAppService, UserAppService>();
 
 var app = builder.Build();
 
@@ -35,6 +62,8 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
+
+app.UseAuthentication();
 app.UseAuthorization();
 
 // Area routing

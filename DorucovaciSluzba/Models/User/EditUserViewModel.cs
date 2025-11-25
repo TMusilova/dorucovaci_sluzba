@@ -1,6 +1,6 @@
-﻿using DorucovaciSluzba.Domain.Entities;
-using System.ComponentModel.DataAnnotations;
+﻿using DorucovaciSluzba.Infrastructure.Identity;
 using DorucovaciSluzba.Validations;
+using System.ComponentModel.DataAnnotations;
 
 namespace DorucovaciSluzba.Models.User
 {
@@ -11,12 +11,12 @@ namespace DorucovaciSluzba.Models.User
         [Required(ErrorMessage = "Jméno je povinné")]
         [FirstLetterCapitalizedCZ]
         [Display(Name = "Jméno")]
-        public string Jmeno { get; set; } = string.Empty;
+        public string FirstName { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Příjmení je povinné")]
         [FirstLetterCapitalizedCZ]
         [Display(Name = "Příjmení")]
-        public string Prijmeni { get; set; } = string.Empty;
+        public string LastName { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "E-mailová adresa je povinná")]
         [EmailCZ]
@@ -50,9 +50,9 @@ namespace DorucovaciSluzba.Models.User
 
         // ROLE
         [Display(Name = "Role uživatele")]
-        public int TypId { get; set; }
+        public int RoleId { get; set; }
 
         // Pro dropdown
-        public List<TypUzivatel>? DostupneRole { get; set; }
+        public List<Role>? DostupneRole { get; set; }
     }
 }
