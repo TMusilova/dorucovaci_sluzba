@@ -1,9 +1,10 @@
 ﻿using DorucovaciSluzba.Domain.Entities;
+using DorucovaciSluzba.Infrastructure.Identity;
 using System.ComponentModel.DataAnnotations;
 
 namespace DorucovaciSluzba.Models.Package
 {
-    public class EditZasilkaViewModel
+    public class EditUserViewModel
     {
         public int Id { get; set; }
 
@@ -32,6 +33,6 @@ namespace DorucovaciSluzba.Models.Package
 
         // Pro dropdowny
         public List<StavZasilka>? DostupneStavy { get; set; }
-        public List<Uzivatel>? DostupniKuryri { get; set; }
+        public List<Infrastructure.Identity.User>? DostupniKuryri { get; set; }
     }
 }

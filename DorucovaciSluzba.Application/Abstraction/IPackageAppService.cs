@@ -12,8 +12,6 @@ namespace DorucovaciSluzba.Application.Abstraction
         Zasilka? GetById(int id);
         void Update(Zasilka zasilka);
 
-        IList<Uzivatel> GetAllCouriers();
-
         IList<StavZasilka> GetAllStates();
     }
 }

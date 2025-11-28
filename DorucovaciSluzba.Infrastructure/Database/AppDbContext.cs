@@ -1,20 +1,16 @@
 ﻿using DorucovaciSluzba.Domain.Entities;
 using DorucovaciSluzba.Infrastructure.Database.Seeding;
+using DorucovaciSluzba.Infrastructure.Identity;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DorucovaciSluzba.Infrastructure.Database
 {
-    public class AppDbContext : DbContext
+    public class AppDbContext : IdentityDbContext<User, Role, int>
     {
         public DbSet<Zasilka> Zasilky { get; set; }
-        public DbSet<Uzivatel> Uzivatele { get; set; }
-        public DbSet<TypUzivatel> TypyUzivatelu { get; set; }
         public DbSet<StavZasilka> StavyZasilek { get; set; }
 
         public AppDbContext(DbContextOptions options) : base(options)
@@ -31,32 +27,40 @@ namespace DorucovaciSluzba.Infrastructure.Database
                 .Metadata.SetAfterSaveBehavior(PropertySaveBehavior.Ignore);
 
             modelBuilder.Entity<Zasilka>()
-                .HasOne(z => z.Odesilatel)
+                .HasOne<User>()
                 .WithMany(u => u.OdeslaneZasilky)
                 .HasForeignKey(z => z.OdesilatelId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Zasilka>()
-                .HasOne(z => z.Prijemce)
+                .HasOne<User>()
                 .WithMany(u => u.PrijateZasilky)
                 .HasForeignKey(z => z.PrijemceId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Zasilka>()
-                .HasOne(z => z.Kuryr)
+                .HasOne<User>()
                 .WithMany()
                 .HasForeignKey(z => z.KuryrId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            var userTypeInit = new UserTypeInit();
-            modelBuilder.Entity<TypUzivatel>().HasData(userTypeInit.GetUserTypes());
-
+            // Seeding pro 4 stavy zásilky
             var stateInit = new StateInit();
             modelBuilder.Entity<StavZasilka>().HasData(stateInit.GetStates());
 
-            var userInit = new UserInit();
-            modelBuilder.Entity<Uzivatel>().HasData(userInit.GetUsers());
+            // Identity seeding
+            var rolesInit = new RolesInit();
+            modelBuilder.Entity<Role>().HasData(rolesInit.GetRoles());
 
+            // Seeding pro 4 role (typy uživatelů)
+            var identityUserInit = new IdentityUserInit();
+            modelBuilder.Entity<User>().HasData(identityUserInit.GetAllUsers());
+
+            // Seeding pro uživatele s různými rolemi
+            var userRolesInit = new UserRolesInit();
+            modelBuilder.Entity<IdentityUserRole<int>>().HasData(userRolesInit.GetAllUserRoles());
+
+            // Seeding pro zásilky s různými uživateli
             var packageInit = new PackageInit();
             modelBuilder.Entity<Zasilka>().HasData(packageInit.GetPackages());
         }

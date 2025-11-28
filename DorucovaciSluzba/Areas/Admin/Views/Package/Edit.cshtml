@@ -1,4 +1,4 @@
-﻿@model DorucovaciSluzba.Models.Package.EditZasilkaViewModel
+﻿@model DorucovaciSluzba.Models.Package.EditUserViewModel
 
 @{
     ViewData["Title"] = "Úprava zásilky";
@@ -86,10 +86,10 @@
                                     <label asp-for="KuryrId" class="form-label fw-bold"></label>
                                     <select asp-for="KuryrId" class="form-select">
                                         <option value="">-- Nepřiřazen --</option>
-                                        @foreach (var kuryr in Model.DostupniKuryri ?? new List<DorucovaciSluzba.Domain.Entities.Uzivatel>())
+                                        @foreach (var kuryr in Model.DostupniKuryri ?? new List<DorucovaciSluzba.Infrastructure.Identity.User>())
                                         {
                                             <option value="@kuryr.Id">
-                                                @kuryr.Jmeno @kuryr.Prijmeni
+                                                @kuryr.FirstName @kuryr.LastName
                                             </option>
                                         }
                                     </select>

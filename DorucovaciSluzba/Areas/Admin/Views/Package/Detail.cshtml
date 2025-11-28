@@ -2,20 +2,19 @@
 
 @{
     ViewData["Title"] = "Detail zásilky";
+    var odesilatel = ViewBag.Odesilatel as DorucovaciSluzba.Infrastructure.Identity.User;
+    var prijemce = ViewBag.Prijemce as DorucovaciSluzba.Infrastructure.Identity.User;
+    var kuryr = ViewBag.Kuryr as DorucovaciSluzba.Infrastructure.Identity.User;
 }
 
 <div class="container mt-4">
     <div class="row justify-content-center">
         <div class="col-lg-8">
-
             <div class="card shadow mb-4">
                 <div class="card-header bg-primary text-white">
                     <h3 class="mb-0 text-center">Zásilka číslo: @Model.Cislo</h3>
                 </div>
                 <div class="card-body">
-
-                    <!-- TODO: Přidat obrázek podle stavu -->
-
                     <!-- AKTUÁLNÍ STAV -->
                     <div class="text-center mb-4">
                         <h4 class="mb-2">
@@ -36,35 +35,40 @@
 
                     <!-- ODESÍLATEL -->
                     <h5 class="text-primary">Odesílatel</h5>
-                    <p class="mb-1"><strong>Jméno:</strong> @Model.Odesilatel?.Jmeno @Model.Odesilatel?.Prijmeni</p>
-                    <p class="mb-1"><strong>E-mail:</strong> @Model.Odesilatel?.Email</p>
-                    <p class="mb-3">
-                        <strong>Adresa:</strong>
-                        @Model.Odesilatel?.Ulice @Model.Odesilatel?.CP,
-                        @Model.Odesilatel?.Mesto, @Model.Odesilatel?.Psc
-                    </p>
+                    <p class="mb-1"><strong>Jméno:</strong> @odesilatel?.FirstName @odesilatel?.LastName</p>
+                    <p class="mb-1"><strong>E-mail:</strong> @odesilatel?.Email</p>
+                    @if (!string.IsNullOrEmpty(odesilatel?.Ulice))
+                    {
+                        <p class="mb-3">
+                            <strong>Adresa:</strong>
+                            @odesilatel.Ulice @odesilatel.CP,
+                            @odesilatel.Mesto, @odesilatel.Psc
+                        </p>
+                    }
 
                     <hr />
 
                     <!-- PŘÍJEMCE -->
                     <h5 class="text-dark">Příjemce</h5>
-                    <p class="mb-1"><strong>Jméno:</strong> @Model.Prijemce?.Jmeno @Model.Prijemce?.Prijmeni</p>
-                    <p class="mb-1"><strong>E-mail:</strong> @Model.Prijemce?.Email</p>
+                    <p class="mb-1"><strong>Jméno:</strong> @prijemce?.FirstName @prijemce?.LastName</p>
+                    <p class="mb-1"><strong>E-mail:</strong> @prijemce?.Email</p>
                     <p class="mb-3">
                         <strong>Adresa doručení:</strong>
                         @Model.DestinaceUlice @Model.DestinaceCP,
                         @Model.DestinaceMesto, @Model.DestinacePsc
                     </p>
 
-                    @if (Model.Kuryr != null)
+                    @if (kuryr != null)
                     {
                         <hr />
                         <h5 class="text-secondary">Kurýr</h5>
-                        <p class="mb-1"><strong>Jméno:</strong> @Model.Kuryr.Jmeno @Model.Kuryr.Prijmeni</p>
-                        <p class="mb-1"><strong>E-mail:</strong> @Model.Kuryr.Email</p>
-                        <p class="mb-1"><strong>Tel. číslo:</strong> @Model.Kuryr.Telefon</p>
+                        <p class="mb-1"><strong>Jméno:</strong> @kuryr.FirstName @kuryr.LastName</p>
+                        <p class="mb-1"><strong>E-mail:</strong> @kuryr.Email</p>
+                        @if (!string.IsNullOrEmpty(kuryr.Telefon))
+                        {
+                            <p class="mb-1"><strong>Tel. číslo:</strong> @kuryr.Telefon</p>
+                        }
                     }
-
                 </div>
                 <div class="card-footer text-center">
                     <a asp-action="Track" class="btn btn-primary">
@@ -75,7 +79,6 @@
                     </a>
                 </div>
             </div>
-
         </div>
     </div>
 </div>
