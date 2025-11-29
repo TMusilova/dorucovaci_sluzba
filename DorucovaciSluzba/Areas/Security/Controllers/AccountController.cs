@@ -1,21 +1,21 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using DorucovaciSluzba.Application.ViewModels;
+using Microsoft.AspNetCore.Mvc;
 
 namespace DorucovaciSluzba.Areas.Security.Controllers
 {
-    public class AccountController : Controller
+    [Area("Security")]
+    public class AccountController : Controller 
     {
-        [Area("Security")]
-        public class AccountsController : Controller 
+        [HttpGet]
+        public IActionResult Register()
         {
-            public IActionResult Register()
-            {
-                return View();
-            }
+            return View();
+        }
 
-            public IActionResult Login()
-            {
-                return View();
-            }
+        [HttpGet]
+        public IActionResult Login()
+        {
+            return View();
         }
     }
 }
