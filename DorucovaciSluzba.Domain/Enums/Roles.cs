@@ -1,4 +1,5 @@
-﻿namespace DorucovaciSluzba.Infrastructure.Identity.Enums
+﻿
+namespace DorucovaciSluzba.Domain.Enums
 {
     public enum Roles
     {
