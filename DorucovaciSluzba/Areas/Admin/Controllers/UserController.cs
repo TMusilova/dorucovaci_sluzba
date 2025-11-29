@@ -1,11 +1,14 @@
-﻿using DorucovaciSluzba.Infrastructure.Identity;
+﻿using DorucovaciSluzba.Domain.Enums;
+using DorucovaciSluzba.Infrastructure.Identity;
 using DorucovaciSluzba.Models.User;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DorucovaciSluzba.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = nameof(Roles.Admin))]
     public class UserController : Controller
     {
         private readonly UserManager<User> _userManager;

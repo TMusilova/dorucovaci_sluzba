@@ -1,13 +1,16 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using DorucovaciSluzba.Application.Abstraction;
 using DorucovaciSluzba.Domain.Entities;
-using DorucovaciSluzba.Application.Abstraction;
-using DorucovaciSluzba.Models.Package;
+using DorucovaciSluzba.Domain.Enums;
 using DorucovaciSluzba.Infrastructure.Identity;
+using DorucovaciSluzba.Models.Package;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 
 namespace DorucovaciSluzba.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = nameof(Roles.Admin) + ", " + nameof(Roles.Podpora))]
     public class PackageController : Controller
     {
         IPackageAppService _packageAppService;
